@@ -326,7 +326,7 @@ cabbageX[i],cabbageY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
       &&isHit(playerX,playerY,SOIL_SIZE,SOIL_SIZE,
 clockX[i],clockY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
 
-        gameTimer+=15;
+        
         clockX[i] = clockY[i] = -1000;
 
       }
@@ -585,7 +585,8 @@ if(gameTimer<6000&& gameTimer>5000){
 	text(timeString, 0, height);
 }
 
-void addTime(float seconds){					// Requirement #2
+void addTime(float seconds){	// Requirement #2
+
 }
 
 boolean isHit(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh){
