@@ -4,6 +4,9 @@ PImage bg, life, cabbage, soilEmpty, clock, caution, sweethome;
 PImage soldier;
 PImage[][] soils, stones;
 PFont font;
+    float ax,ay,bx,by;
+    boolean isHit=false;
+
 
 final int GAME_START = 0, GAME_RUN = 1, GAME_OVER = 2, GAME_WIN = 3;
 int gameState = 0;
@@ -43,6 +46,7 @@ int playerMoveDuration = 15;
 
 boolean demoMode = false;
 
+
 void setup() {
 	size(640, 480, P2D);
 	frameRate(60);
@@ -68,6 +72,11 @@ void setup() {
 
 	font = createFont("font/font.ttf", 56);
 	textFont(font);
+
+    isHit=bx + SOIL_SIZE > ax    // r1 right edge past r2 left
+        && bx < ax+ SOIL_SIZE    // r1 left edge past r2 right
+        && by + SOIL_SIZE > ay    // r1 top edge past r2 bottom
+        && by< ay+ SOIL_SIZE;
 
 	// Load PImage[][] soils
 	soils = new PImage[6][5];
@@ -106,7 +115,7 @@ void initGame(){
 	initCabbages();
 
 	// Requirement #2: Initialize clocks and their position
-
+   initClocks();
 }
 
 void initPlayer(){
@@ -193,6 +202,18 @@ void initCabbages(){
 void initClocks(){
 	// Requirement #1: Complete this method based on initCabbages()
 	// - Remember to reroll if the randomized position has a cabbage on the same soil!
+  clockX = new float[6];
+  clockY = new float[6];
+
+  for(int i = 0; i < clockX.length; i++){
+    if(clockX[i]==cabbageX[i]&&clockY[i]==cabbageY[i]){
+    clockX[i] = SOIL_SIZE * floor(random(SOIL_COL_COUNT));
+    clockY[i] = SOIL_SIZE * ( i * 4 + floor(random(4)));
+    }else{
+          clockX[i] = SOIL_SIZE * floor(random(SOIL_COL_COUNT));
+    clockY[i] = SOIL_SIZE * ( i * 4 + floor(random(4)));
+    }
+}
 }
 
 void draw() {
@@ -281,16 +302,15 @@ void draw() {
 
 		// Cabbages
 
+
 		for(int i = 0; i < cabbageX.length; i++){
 
 			image(cabbage, cabbageX[i], cabbageY[i]);
 
 			// Requirement #3: Use boolean isHit(...) to detect collision
 			if(playerHealth < PLAYER_MAX_HEALTH
-			&& cabbageX[i] + SOIL_SIZE > playerX    // r1 right edge past r2 left
-		    && cabbageX[i] < playerX + SOIL_SIZE    // r1 left edge past r2 right
-		    && cabbageY[i] + SOIL_SIZE > playerY    // r1 top edge past r2 bottom
-		    && cabbageY[i] < playerY + SOIL_SIZE) { // r1 bottom edge past r2 top
+			&& isHit(playerX,playerY,SOIL_SIZE,SOIL_SIZE,
+cabbageX[i],cabbageY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
 
 				playerHealth ++;
 				cabbageX[i] = cabbageY[i] = -1000;
@@ -301,7 +321,21 @@ void draw() {
 
 		// Requirement #1: Clocks
 		// --- Requirement #3: Use boolean isHit(...) to detect clock <-> player collision
+    for(int i = 0; i < clockX.length; i++){
 
+      image(clock, clockX[i], clockY[i]);
+
+      // Requirement #3: Use boolean isHit(...) to detect collision
+      if(playerHealth < PLAYER_MAX_HEALTH
+      &&isHit(playerX,playerY,SOIL_SIZE,SOIL_SIZE,
+clockX[i],clockY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
+
+        gameTimer+=15;
+        clockX[i] = clockY[i] = -1000;
+
+      }
+
+    }
 		// Groundhog
 
 		PImage groundhogDisplay = groundhogIdle;
@@ -421,10 +455,8 @@ void draw() {
 			image(soldier, soldierX[i], soldierY[i]);
 
 			// Requirement #3: Use boolean isHit(...) to detect collision
-			if(soldierX[i] + SOIL_SIZE > playerX    // r1 right edge past r2 left
-		    && soldierX[i] < playerX + SOIL_SIZE    // r1 left edge past r2 right
-		    && soldierY[i] + SOIL_SIZE > playerY    // r1 top edge past r2 bottom
-		    && soldierY[i] < playerY + SOIL_SIZE) { // r1 bottom edge past r2 top
+			if(isHit(playerX,playerY,SOIL_SIZE,SOIL_SIZE,
+soldierX[i],soldierY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
 
 				playerHealth --;
 
@@ -457,10 +489,10 @@ void draw() {
 		// Timer
 		gameTimer --;
 		if(gameTimer <= 0) gameState = GAME_OVER;
-
+     
 		// Time UI - Requirement #4
 		drawTimerUI();
-
+ 
 		// Health UI
 		for(int i = 0; i < playerHealth; i++){
 			image(life, 10 + i * 70, 10);
@@ -527,7 +559,8 @@ void drawDepthUI(){
 
 void drawTimerUI(){
 	String timeString = str(gameTimer); // Requirement #4: Get the mm:ss string using String convertFramesToTimeString(int frames)
-
+  int frames;
+  
 	textAlign(LEFT, BOTTOM);
 
 	// Time Text Shadow Effect - You don't have to change this!
@@ -536,7 +569,23 @@ void drawTimerUI(){
 
 	// Actual Time Text
 	color timeTextColor = #ffffff; 		// Requirement #5: Get the correct color using color getTimeTextColor(int frames)
-	fill(timeTextColor);
+	color blue=#00ffff;
+color yellow=#ffcc00;
+color orange=#ff6600;
+color red=#ff0000;
+fill(blue);
+if(gameTimer<6000&& gameTimer>5000){
+ fill( timeTextColor);
+ if(gameTimer<5000&& gameTimer>4000){
+  fill(yellow); 
+  if(gameTimer<4000&&gameTimer>3000){
+   fill(orange);
+   if(gameTimer<3000&&gameTimer>2000){
+    fill(red); 
+   }
+  }
+ }
+}
 	text(timeString, 0, height);
 }
 
@@ -544,11 +593,15 @@ void addTime(float seconds){					// Requirement #2
 }
 
 boolean isHit(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh){
-	return false;								// Requirement #3
+	return 
+        bx + bw >ax    // r1 right edge past r2 left
+        && bx < ax + aw    // r1 left edge past r2 right
+        && by + bh > ay    // r1 top edge past r2 bottom
+        && by < ay +aw	;							// Requirement #3
 }
 
 String convertFramesToTimeString(int frames){	// Requirement #4
-	return "";
+	return "mm:ss";
 }
 
 color getTimeTextColor(int frames){				// Requirement #5
