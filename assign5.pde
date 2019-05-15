@@ -4,8 +4,8 @@ PImage bg, life, cabbage, soilEmpty, clock, caution, sweethome;
 PImage soldier;
 PImage[][] soils, stones;
 PFont font;
-    float ax,ay,bx,by;
-    boolean isHit=false;
+  
+    
 
 
 final int GAME_START = 0, GAME_RUN = 1, GAME_OVER = 2, GAME_WIN = 3;
@@ -326,7 +326,7 @@ cabbageX[i],cabbageY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
       &&isHit(playerX,playerY,SOIL_SIZE,SOIL_SIZE,
 clockX[i],clockY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
 
-        
+        gameTimer+=15;
         clockX[i] = clockY[i] = -1000;
 
       }
