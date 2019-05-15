@@ -73,10 +73,6 @@ void setup() {
 	font = createFont("font/font.ttf", 56);
 	textFont(font);
 
-    isHit=bx + SOIL_SIZE > ax    // r1 right edge past r2 left
-        && bx < ax+ SOIL_SIZE    // r1 left edge past r2 right
-        && by + SOIL_SIZE > ay    // r1 top edge past r2 bottom
-        && by< ay+ SOIL_SIZE;
 
 	// Load PImage[][] soils
 	soils = new PImage[6][5];
