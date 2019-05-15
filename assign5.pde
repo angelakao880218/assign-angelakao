@@ -321,8 +321,7 @@ cabbageX[i],cabbageY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
       image(clock, clockX[i], clockY[i]);
 
       // Requirement #3: Use boolean isHit(...) to detect collision
-      if(playerHealth < PLAYER_MAX_HEALTH
-      &&isHit(playerX,playerY,SOIL_SIZE,SOIL_SIZE,
+      if(isHit(playerX,playerY,SOIL_SIZE,SOIL_SIZE,
 clockX[i],clockY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
 
         gameTimer+=15;
@@ -554,7 +553,7 @@ void drawDepthUI(){
 
 void drawTimerUI(){
 	String timeString = str(gameTimer); // Requirement #4: Get the mm:ss string using String convertFramesToTimeString(int frames)
-  int frames;
+  
   
 	textAlign(LEFT, BOTTOM);
 
