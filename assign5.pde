@@ -324,7 +324,7 @@ cabbageX[i],cabbageY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
       if(isHit(playerX,playerY,SOIL_SIZE,SOIL_SIZE,
 clockX[i],clockY[i],SOIL_SIZE,SOIL_SIZE)) { // r1 bottom edge past r2 top
 
-        gameTimer+=15;
+        addTime(15f);
         clockX[i] = clockY[i] = -1000;
 
       }
@@ -552,39 +552,23 @@ void drawDepthUI(){
 }
 
 void drawTimerUI(){
-	String timeString = str(gameTimer); // Requirement #4: Get the mm:ss string using String convertFramesToTimeString(int frames)
+	//String timeString = str(gameTimer); // Requirement #4: Get the mm:ss string using String convertFramesToTimeString(int frames)
   
   
 	textAlign(LEFT, BOTTOM);
 
 	// Time Text Shadow Effect - You don't have to change this!
 	fill(0, 120);
-	text(timeString, 3, height + 3);
+	text(convertFramesToTimeString(gameTimer), 3, height + 3);
 
 	// Actual Time Text
-	color timeTextColor = #ffffff; 		// Requirement #5: Get the correct color using color getTimeTextColor(int frames)
-	color blue=#00ffff;
-color yellow=#ffcc00;
-color orange=#ff6600;
-color red=#ff0000;
-fill(blue);
-if(gameTimer<6000&& gameTimer>5000){
- fill( timeTextColor);
- if(gameTimer<5000&& gameTimer>4000){
-  fill(yellow); 
-  if(gameTimer<4000&&gameTimer>3000){
-   fill(orange);
-   if(gameTimer<3000&&gameTimer>2000){
-    fill(red); 
-   }
-  }
- }
-}
-	text(timeString, 0, height);
+ 		// Requirement #5: Get the correct color using color getTimeTextColor(int frames)
+fill(getTimeTextColor(gameTimer));
+	text(convertFramesToTimeString(gameTimer), 0, height);
 }
 
 void addTime(float seconds){	// Requirement #2
-
+gameTimer+=seconds*60;
 }
 
 boolean isHit(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh){
@@ -595,12 +579,33 @@ boolean isHit(float ax, float ay, float aw, float ah, float bx, float by, float 
         && by < ay +aw	;							// Requirement #3
 }
 
-String convertFramesToTimeString(int frames){	// Requirement #4
-	return "mm:ss";
+String convertFramesToTimeString(int frames){
+  	// Requirement #4
+  int seconds=floor(frames/60);
+  int minutes=floor(seconds/60);
+  seconds%=60;
+  String first=nf(minutes,2);
+  String two=nf(seconds,2);
+	return first+":"+two;
 }
 
-color getTimeTextColor(int frames){				// Requirement #5
-	return #ffffff;
+color getTimeTextColor(int frames){
+   if(frames >= 2*60*60) {
+    return #00ffff;
+  }
+  else if(frames >= 60*60 && frames < 2*60*60){
+    return #ffffff;
+  }
+  else if(frames >=30*60 && frames < 60*60){
+    return #ffcc00;
+  }
+  else if(frames >= 10*60 && frames < 30*60){
+    return #ff6600;
+  }
+  else{
+    return #ff0000;
+  }				// Requirement #5
+	
 }
 
 int getEnemyIndexByRow(int row){				// Requirement #6
